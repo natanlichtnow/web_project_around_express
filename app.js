@@ -1,20 +1,24 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const userRoutes = require('./routes/users');
+const cardRoutes = require('./routes/cards');
+const { NOT_FOUND } = require('./utils/errors');
 
-const usersRouter = require('./routes/users');
-const cardsRouter = require('./routes/cards');
-
-const app = express();
 const { PORT = 3000 } = process.env;
 
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
+const app = express();
 
-app.get('/card', (req, res) => {
-  res.redirect('/cards');
-});
+mongoose.connect('mongodb://localhost:27017/arounddb')
+  .then(() => console.log('Conectado ao MongoDB'))
+  .catch((err) => console.error('Erro ao conectar ao MongoDB:', err));
+
+app.use(express.json());
+
+app.use('/users', userRoutes);
+app.use('/cards', cardRoutes);
 
 app.use((req, res) => {
-  res.status(404).send({ message: 'Recurso requisitado não encontrado' });
+  res.status(NOT_FOUND).json({ message: 'Rota não encontrada' });
 });
 
 app.listen(PORT, () => {
