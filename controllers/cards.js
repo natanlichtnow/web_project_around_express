@@ -1,8 +1,6 @@
 const Card = require('../models/card');
 const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/errors');
 
-const TEMP_USER_ID = '6555b31d52f19a01dfa32b31'; // ID fixo temporário (sem autenticação)
-
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.json(cards))
@@ -11,8 +9,9 @@ const getCards = (req, res) => {
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
+  const { _id } = req.user;
 
-  Card.create({ name, link, owner: TEMP_USER_ID })
+  Card.create({ name, link, owner: _id })
     .then((card) => res.status(201).json(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -42,10 +41,11 @@ const deleteCard = (req, res) => {
 
 const likeCard = (req, res) => {
   const { cardId } = req.params;
+  const { _id } = req.user;
 
   Card.findByIdAndUpdate(
     cardId,
-    { $addToSet: { likes: TEMP_USER_ID } },
+    { $addToSet: { likes: _id } },
     { new: true },
   )
     .then((card) => {
@@ -64,10 +64,11 @@ const likeCard = (req, res) => {
 
 const dislikeCard = (req, res) => {
   const { cardId } = req.params;
+  const { _id } = req.user;
 
   Card.findByIdAndUpdate(
     cardId,
-    { $pull: { likes: TEMP_USER_ID } },
+    { $pull: { likes: _id } },
     { new: true },
   )
     .then((card) => {

@@ -40,10 +40,10 @@ const createUser = (req, res) => {
 
 const updateProfile = (req, res) => {
   const { name, about } = req.body;
-  const userId = '6555b31d52f19a01dfa32b31'; // ID fixo temporário (sem autenticação)
+  const { _id } = req.user;
 
   User.findByIdAndUpdate(
-    userId,
+    _id,
     { name, about },
     { new: true, runValidators: true },
   )
@@ -63,10 +63,10 @@ const updateProfile = (req, res) => {
 
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  const userId = '6555b31d52f19a01dfa32b31'; // ID fixo temporário (sem autenticação)
+  const { _id } = req.user;
 
   User.findByIdAndUpdate(
-    userId,
+    _id,
     { avatar },
     { new: true, runValidators: true },
   )
